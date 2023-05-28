@@ -1,32 +1,39 @@
 const express = require('express')
-const data = require('./dummyData.json')
-
 const app = express()
+const urlModel = require('./models/url')
 
-// DO CRUD:
-// Sketch out backend flow, then start using past projects as guide. 
+// middlewares:
+app.use(express.json()) 
+app.use(express.urlencoded({extended: false}))
+require('dotenv').config()
+require('./db').connectToMongoDB()
 
-// Re-read the project goals
-// Sketch the database design
-// Highlight requirements fo reach CRUD method
-
-app.post('/createData', (req, res, next)=>{
-    try {
-        console.log(req.body)
-        // const {name, age} = req.body
-        // data.push({name: name, age: age})
-        // return res.status(200).json({name, age})
-    } catch (error) {
-        console.log(error)
-        res.status(500).send("Something broke")
-    }
-})
-
-
+// routes:
 app.get('/', (req, res)=>{
     res.send('Welcome to the scissors server')
 })
+app.post('/', async (req, res)=>{
+//    await urlModel.create({initial_url: req.body.initial_url ,shortened_url: req.body.shortened_url, clicks: req.body.clicks})
+  const url = await urlModel.create(req.body)
+//   res.redirect('/')
+   return res.status(200).json({url})
+})
 
-app.listen(3000, ()=>{
-    console.log('Port running at 3000')
+// route to the url when clicked:
+app.get('/:shortUrl', async (req, res)=>{
+   const shortUrl = await urlModel.findOne({shortened_url: req.params.shortUrl})
+
+   if(shortUrl == null) return res.sendStatus(404)
+
+   shortUrl.clicks++
+   shortUrl.save()
+   
+ return res.status(200).json({shortUrl})
+//    res.redirect(shortUrl.initial_url)
+})
+
+const PORT = process.env.PORT || 4000
+
+app.listen(PORT, ()=>{
+    console.log(`Port running at ${PORT}`)
 })
