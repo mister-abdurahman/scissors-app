@@ -1,0 +1,18 @@
+API tasks:
+- CREATE USER
+- AUTHENTICATE USER BEFORE ACCESSING API
+- UPDATE USER
+- DELETE USER
+
+
+- CREATE URL (validate its a corrcet url)
+- Get URL 
+- UPDATE URL (customize url)
+- CREATE QRCODE for urls 
+- GET OTHER DETAILS ABOUT URL: link clicks and where they are coming from, date created
+- DELETE URL
+- CREATE USER (ADD AUTHO option)
+- UPDATE USER INFO
+- DELETE USER
+- AUTH USER FOR LOGIN
+- SAVE COOKIE FOR PERSISTENT LOGIN
