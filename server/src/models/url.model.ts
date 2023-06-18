@@ -11,4 +11,5 @@ const urlSchema = new Schema({
     clicks: {type: Number, required: true, default: 0}
 })
 
-module.exports = mongoose.model('url', urlSchema);
+// module.exports = mongoose.model('url', urlSchema);
+export default  mongoose.model('url', urlSchema);

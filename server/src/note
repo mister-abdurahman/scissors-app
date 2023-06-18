@@ -3,7 +3,7 @@ API tasks:
 - AUTHENTICATE USER BEFORE ACCESSING API
 - UPDATE USER
 - DELETE USER
-
+ 
 
 - CREATE URL (validate its a corrcet url)
 - Get URL 
