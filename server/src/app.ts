@@ -1,6 +1,7 @@
 import express from 'express'
 import urlRouter from './routes/url.route'
 import userRouter from './routes/user.route'
+import { requireAuth } from './middlewares/authMiddleware'
 
 const app = express()
 
@@ -11,8 +12,8 @@ require('dotenv').config()
 require('./db').connectToMongoDB()
 
 // routes:
-app.use('/url', urlRouter)
-app.use('/user', userRouter)
+app.use('/url', requireAuth , urlRouter)
+app.use('/user',userRouter)
 
 app.get('/', (req, res)=>{
     res.send('Welcome to the scissors server')

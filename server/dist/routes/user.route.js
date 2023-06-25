@@ -14,13 +14,26 @@ require("dotenv").config();
 // jwt is in secs and cookie is in millisecs
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
-    return jsonwebtoken_1.default.sign({ id }, process.env.SECRET_KEY, { expiresIn: maxAge });
+    return jsonwebtoken_1.default.sign({ id }, "secret_of_jwt_auth12345", { expiresIn: maxAge });
+};
+const handleErrors = (err) => {
+    console.log(err.message, err.code);
+    let errors = { email: '', password: '' };
+    // duplicate error code:
+    if (err.code === 11000) {
+        errors.email = 'This email is already registered';
+        return errors;
+    }
+    if (err.message === 'incorrect email')
+        errors.email = 'That email is not registered';
+    if (err.message === 'incorrect password')
+        errors.password = 'That password is incorrect';
+    return errors;
 };
 userRouter.post('/signup', async (req, res) => {
     try {
         const { firstName, lastName, email, password } = req.body;
         if (!email || !password || !firstName || !lastName) {
-            console.log(firstName, lastName, email, password);
             throw new Error("Ensure you fill all the inputs correctly");
         }
         // const user = await userModel.create({firstName, lastName, email, password:hashedPassword})
@@ -44,24 +57,19 @@ userRouter.post('/login', async function (req, res) {
         //   console.log(isMatch)
         //   res.status(200).json({id: retrievedUser._id})
         const user = await user_model_1.default.login(email, password);
+        const token = createToken(user._id);
+        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.status(200).json({ newUser: user._id });
         res.status(200).json({ user: user._id });
     }
     catch (error) {
-        console.log(error);
-        res.status(400).json({ error });
+        const errors = handleErrors(error);
+        res.status(400).json({ errors });
     }
 });
-userRouter.get('/set-cookie', async (req, res) => {
-    res.cookie('newUser', true, { maxAge: 1000 * 60 * 60 * 24, httpOnly: true });
-    res.cookie('isWorking', false, { maxAge: 1000 * 60 * 60 * 24, httpOnly: true });
-    res.send('you got the cookies');
-});
-userRouter.get('/read-cookie', (req, res) => {
-    res.json({ cookies: req.headers.cookie });
-});
 exports.default = userRouter;
-// I can now signup and login, next up is cookie and jwt auth.
-//netninja: https://www.youtube.com/watch?v=SnoAwLP1a-0&list=PL4cUxeGkcC9iqqESP8335DA5cRFp8loyp
+// fix error handlin, then next up is authenticating routes with jwt auth.
+//netninja #15: https://www.youtube.com/watch?v=SnoAwLP1a-0&list=PL4cUxeGkcC9iqqESP8335DA5cRFp8loyp
 // JWT signing:
 // Headers: tells the server what type of signature is being used (meta)
 // Payload: used to identify the user (contains user id)
