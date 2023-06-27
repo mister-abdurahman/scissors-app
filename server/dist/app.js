@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const url_route_1 = __importDefault(require("./routes/url.route"));
 const user_route_1 = __importDefault(require("./routes/user.route"));
+const authMiddleware_1 = require("./middlewares/authMiddleware");
 const app = (0, express_1.default)();
 // middlewares:
 app.use(express_1.default.json());
@@ -13,7 +14,7 @@ app.use(express_1.default.urlencoded({ extended: false }));
 require('dotenv').config();
 require('./db').connectToMongoDB();
 // routes:
-app.use('/url', url_route_1.default);
+app.use('/url', authMiddleware_1.requireAuth, url_route_1.default);
 app.use('/user', user_route_1.default);
 app.get('/', (req, res) => {
     res.send('Welcome to the scissors server');
